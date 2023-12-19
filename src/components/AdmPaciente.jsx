@@ -37,7 +37,7 @@ const AdmPaciente = () => {
   const footerContent = (
     <div>
       <Button label="Cancelar" icon="pi pi-times" onClick={() => setVisible(false)} className="p-button-text" />
-      <Button label="Aceptar" icon="pi pi-check" onClick={() => guardarRegistro()} autoFocus />
+      <Button label="Aceptar" icon="pi pi-check" onClick={() => guardarRegistro()}/>
     </div>
   );
 
@@ -89,7 +89,7 @@ const AdmPaciente = () => {
       });
       console.log('valores',formValues,registro);
       formValues.opcion = Object.keys(registro).length > 0 ? 'U':'I';
-      formValues.id = registro.IdPaciente;
+      formValues.id = registro.IdPaciente || 0;
       if(row){
         formValues.opcion = 'D';
         formValues.id = row.IdPaciente
@@ -115,9 +115,17 @@ const AdmPaciente = () => {
     }
   }
 
+  const nuevo = ()=>{
+    setRegistro({})
+    setVisible(true)
+  }
+
   return (
     <div style={{textAlign:'center'}}>
-      <h3>Listado de Pacientes</h3>
+      <div className="flex justify-content-center align-items-center gap-5">
+        <h3>Listado de Pacientes</h3>
+        <Button rounded outlined icon="pi pi-plus" size="small" onClick={nuevo} severity="success" tooltip="Agregar Consulta"/>
+      </div>
       <DataTable value={pacientes} stripedRows  size="small">
         <Column header="Acciones" body={actionTemplate} style={{ width:'clamp(100px, 110px, 120px)' }}></Column>
         <Column field="IdPaciente" header="ID"></Column>
@@ -134,7 +142,7 @@ const AdmPaciente = () => {
         <form action="" style={{display:'flex',flexDirection:'row',gap:'2rem',flexWrap:'wrap'}}>
           <span style={{display:'flex',flexDirection:'column',gap:'0.2rem'}}>
             <label htmlFor="nombre">Nombre</label>
-            <InputText id="nombre" name="nombre" onChange={(e) => onInputChange(e, 'Nombre')} value={registro.Nombre}/>
+            <InputText id="nombre" name="nombre" onChange={(e) => onInputChange(e, 'Nombre')} value={registro.Nombre} autoFocus/>
           </span>
           <span style={{display:'flex',flexDirection:'column',gap:'0.2rem'}}>
             <label htmlFor="apellidos">Apellidos</label>

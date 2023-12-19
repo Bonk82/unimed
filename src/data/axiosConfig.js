@@ -10,6 +10,7 @@ instance.interceptors.response.use(
   (error) => {
     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
       // Redirigir a la página de inicio de sesión o la página que prefieras
+      localStorage.removeItem("conex")
       window.location.href = '/login';
     }
     return Promise.reject(error);

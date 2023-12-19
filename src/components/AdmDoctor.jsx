@@ -45,7 +45,7 @@ const AdmDoctor = () => {
   const footerContent = (
     <div>
       <Button label="Cancelar" icon="pi pi-times" onClick={() => setVisible(false)} className="p-button-text" />
-      <Button label="Aceptar" icon="pi pi-check" onClick={() => guardarRegistro()} autoFocus />
+      <Button label="Aceptar" icon="pi pi-check" onClick={() => guardarRegistro()}/>
     </div>
   );
 
@@ -133,8 +133,10 @@ const AdmDoctor = () => {
 
   return (
     <div style={{textAlign:'center'}}>
-      <h3>Listado de Doctores</h3>
-      <Button label="Nuevo" icon="pi pi-plus" onClick={nuevo}  severity="success" style={{marginBottom:'1rem'}} />
+      <div className="flex justify-content-center align-items-center gap-5">
+        <h3>Listado de Doctores</h3>
+        <Button rounded outlined icon="pi pi-plus" size="small" onClick={nuevo} severity="success" tooltip="Agregar Doctor"/>
+      </div>
       <DataTable value={doctores} stripedRows  size="small">
         <Column header="Acciones" body={actionTemplate} style={{ width: 'clamp(100px, 110px, 120px)' }}></Column>
         <Column field="IdDoctor" header="ID"></Column>
@@ -148,7 +150,7 @@ const AdmDoctor = () => {
         <form action="" style={{display:'flex',flexDirection:'row',gap:'2rem',flexWrap:'wrap'}}>
           <span style={{display:'flex',flexDirection:'column',gap:'0.2rem'}}>
             <label htmlFor="nombre">Nombre Doctor</label>
-            <InputText id="nombre" name="nombre" onChange={(e) => onInputChange(e, 'Nombre')} value={registro.Nombre}/>
+            <InputText id="nombre" name="nombre" onChange={(e) => onInputChange(e, 'Nombre')} value={registro.Nombre} autoFocus/>
           </span>
           <span style={{display:'flex',flexDirection:'column',gap:'0.2rem'}}>
             <label htmlFor="idEspecialidad">Especialidad</label>

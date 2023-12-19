@@ -37,7 +37,7 @@ const AdmConsulta = () => {
   const footerContent = (
     <div>
       <Button label="Cancelar" icon="pi pi-times" onClick={() => setVisible(false)} className="p-button-text" />
-      <Button label="Aceptar" icon="pi pi-check" onClick={() => guardarRegistro()} autoFocus />
+      <Button label="Aceptar" icon="pi pi-check" onClick={() => guardarRegistro()}/>
     </div>
   );
 
@@ -104,7 +104,7 @@ const AdmConsulta = () => {
       });
       console.log('valores',formValues,registro);
       formValues.opcion = Object.keys(registro).length > 0 ? 'U':'I';
-      formValues.id = registro.IdConsulta;
+      formValues.id = registro.IdConsulta || 0;
       if(row){
         formValues.opcion = 'D';
         formValues.id = row.IdConsulta
@@ -127,9 +127,17 @@ const AdmConsulta = () => {
     }
   }
 
+  const nuevo = ()=>{
+    setRegistro({})
+    setVisible(true)
+  }
+
   return (
     <div style={{textAlign:'center'}}>
-      <h3>Listado de Doctores</h3>
+      <div className="flex justify-content-center align-items-center gap-5">
+        <h3>Listado de Consultas</h3>
+        <Button rounded outlined icon="pi pi-plus" size="small" onClick={nuevo} severity="success" tooltip="Agregar Consulta"/>
+      </div>
       <DataTable value={consultas} stripedRows  size="small">
         <Column header="Acciones" body={actionTemplate} style={{ width: 'clamp(100px, 110px, 120px)' }}></Column>
         <Column field="IdConsulta" header="ID"></Column>
@@ -143,7 +151,7 @@ const AdmConsulta = () => {
         <form action="" style={{display:'flex',flexDirection:'row',gap:'2rem',flexWrap:'wrap'}}>
           <span style={{display:'flex',flexDirection:'column',gap:'0.2rem'}}>
             <label htmlFor="fecha">Fecha</label>
-            <InputText id="fecha" type="date" onChange={(e) => onInputChange(e, 'Fecha')} name="fecha" value={registro.Fecha}/>
+            <InputText id="fecha" type="date" onChange={(e) => onInputChange(e, 'Fecha')} name="fecha" value={registro.Fecha} autoFocus/>
           </span>
           <span style={{display:'flex',flexDirection:'column',gap:'0.2rem'}}>
             <label htmlFor="horaInicio">Desde (Hrs.)</label>

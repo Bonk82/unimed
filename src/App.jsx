@@ -9,10 +9,11 @@ import Reserva from "./components/Reserva";
 import Login from "./components/Login";
 import NotFound from "./components/NotFound";
 // import jwt from 'jsonwebtoken'
-import "primereact/resources/themes/vela-green/theme.css";
-import 'primeicons/primeicons.css';
 import { PrimeReactProvider } from 'primereact/api';
-import Tailwind from 'primereact/passthrough/tailwind';
+import "primereact/resources/themes/vela-green/theme.css";
+import 'primeflex/primeflex.css';                                   // css utility
+import 'primeicons/primeicons.css';
+import 'primereact/resources/primereact.css';
 
 function App() {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ function App() {
 
   return (
     <AuthProvider>
-      <PrimeReactProvider value={{pt:Tailwind}}>
+      <PrimeReactProvider value={{}}>
         <NavBar/>
         <Routes>
           <Route path="/" element={<Home />} />
