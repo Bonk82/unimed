@@ -8,21 +8,29 @@ import {fetching} from '../data/access'
 import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import { Dropdown } from "primereact/dropdown";
 
 const AdmConsulta = () => {
-
   const [consultas, setConsultas] = useState([])
+  const [doctores, setDoctores] = useState([])
   const [visible, setVisible] = useState(false);
   const [registro, setRegistro] = useState({});
+  const [elDoc, setElDoc] = useState({})
   const toast = useRef(null);
 
   useEffect(() => {
     cargarConsultas();
+    cargarDoctores();
   }, [])
 
   const cargarConsultas = async ()=>{
     const p = await  fetching({opcion:'listarConsulta'})
     setConsultas(p.data?.data)
+  }
+
+  const cargarDoctores = async ()=>{
+    const p = await  fetching({opcion:'listarDoctor'})
+    setDoctores(p.data?.data)
   }
 
   const actionTemplate = (rowData)=>{
@@ -45,17 +53,19 @@ const AdmConsulta = () => {
     return rowData.Fecha ? dayjs(rowData.Fecha).format('DD/MM/YYYY') : '';
   };
   const timeBodyInicio = (rowData) => {
-    return dayjs(rowData.HoraInicio).format('HH:mm');
+    return dayjs(rowData.HoraInicio).add(4,'hour').format('HH:mm');
   };
 
   const timeBodyFin = (rowData) => {
-    return dayjs(rowData.HoraFin).format('HH:mm');
+    return dayjs(rowData.HoraFin).add(4,'hour').format('HH:mm');
   };
 
   const editar = (data) => {
     if(data.Fecha) data.Fecha = dayjs(data.Fecha).format('YYYY-MM-DD')
-    if(data.HoraInicio) data.HoraInicio = dayjs(data.HoraInicio).format('HH:mm')
-    if(data.HoraFin) data.HoraFin = dayjs(data.HoraFin).format('HH:mm')
+    if(data.HoraInicio) data.HoraInicio = dayjs(data.HoraInicio).add(4,'hours').format('HH:mm')
+    if(data.HoraFin) data.HoraFin = dayjs(data.HoraFin).add(4,'hours').format('HH:mm')
+    const p = doctores.filter(f=>f.IdDoctor == data.IdDoctor)[0]
+    setElDoc(p)
     setRegistro(data)
     setVisible(true)
   }
@@ -103,8 +113,9 @@ const AdmConsulta = () => {
         formValues[element.name] = element.value;
       });
       console.log('valores',formValues,registro);
-      formValues.opcion = Object.keys(registro).length > 0 ? 'U':'I';
+      formValues.opcion = registro.IdConsulta > 0 ? 'U':'I';
       formValues.id = registro.IdConsulta || 0;
+      formValues.idDoctor = elDoc.IdDoctor
       if(row){
         formValues.opcion = 'D';
         formValues.id = row.IdConsulta
@@ -119,6 +130,7 @@ const AdmConsulta = () => {
       cargarConsultas();
       const tipo = r.status >= 400 ? 'error':'success'
       toast.current.show({severity:tipo, summary: 'Gestión Consulta', detail:r.data.message, life: 3000});
+      setElDoc({})
     } catch (error) {
       console.log(error);
       toast.current.show({severity:'error', summary: 'Gestión Consulta', detail:error, life: 5000});
@@ -145,7 +157,7 @@ const AdmConsulta = () => {
         <Column field="HoraInicio" dataType="time" body={timeBodyInicio}  header="Desde (Hrs.)"></Column>
         <Column field="HoraFin" header="Hasta (Hrs.)" body={timeBodyFin}></Column>
         <Column field="Cupo" header="Cupos"></Column>
-        <Column field="IdDoctor" header="Doctor"></Column>
+        <Column field="Doctor" header="Doctor"></Column>
       </DataTable>
       <Dialog header="Editar Consulta" modal visible={visible} style={{ width: '50vw' }} onHide={() => setVisible(false)} footer={footerContent}>
         <form action="" style={{display:'flex',flexDirection:'row',gap:'2rem',flexWrap:'wrap'}}>
@@ -163,11 +175,12 @@ const AdmConsulta = () => {
           </span>
           <span style={{display:'flex',flexDirection:'column',gap:'0.2rem'}}>
             <label htmlFor="cupo">Cupos</label>
-            <InputText id="cupo" name="cupo" onChange={(e) => onInputNumberChange(e, 'Cupo')} value={registro.Cupo}/>
+            <InputText id="cupo" keyfilter="int" name="cupo" onChange={(e) => onInputNumberChange(e, 'Cupo')} value={registro.Cupo}/>
           </span>
           <span style={{display:'flex',flexDirection:'column',gap:'0.2rem'}}>
-            <label htmlFor="idDoctor">Doctor</label>
-            <InputText id="idDoctor" name="idDoctor" onChange={(e) => onInputNumberChange(e, 'IdDoctor')} value={registro.IdDoctor}/>
+            <label htmlFor="doctor">Doctor</label>
+            <Dropdown value={elDoc} id="doctor" name="doctor" onChange={(e) => setElDoc(e.value)}
+            options={doctores} optionLabel="Nombre" placeholder="Selecione Doctor" className="w-full md:w-14rem" />
           </span>
         </form>
       </Dialog>

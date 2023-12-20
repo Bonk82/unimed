@@ -8,29 +8,28 @@ import {fetching} from '../data/access'
 import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
-
+import { Dropdown } from "primereact/dropdown";
 
 const AdmDoctor = () => {
-  // const vacio = {
-  //   IdDoctor : 0,
-  //   nombre : '',
-  //       idEspecialidad : 0,
-  //       direccion : '',
-  //       telefono : '',
-  //       fechaNacimiento : ''
-  // }
   const [doctores, setDoctores] = useState([])
+  const [especialidades, setEspecialidad] = useState([])
   const [visible, setVisible] = useState(false);
   const [registro, setRegistro] = useState({});
+  const [laEspec, setLaEspec] = useState({})
   const toast = useRef(null);
 
   useEffect(() => {
     cargarDoctores();
+    cargarEspecialidades();
   }, [])
 
   const cargarDoctores = async ()=>{
     const p = await  fetching({opcion:'listarDoctor'})
     setDoctores(p.data?.data)
+  }
+  const cargarEspecialidades = async ()=>{
+    const p = await  fetching({opcion:'listarEspecialidad'})
+    setEspecialidad(p.data?.data)
   }
 
   const actionTemplate = (rowData)=>{
@@ -54,21 +53,18 @@ const AdmDoctor = () => {
   };
 
   const editar = (data) => {
+    const p = especialidades.filter(f=>f.IdEspecialidad == data.IdEspecialidad)[0]
+    setLaEspec(p)
     if(data.FechaNacimiento) data.FechaNacimiento = dayjs(data.FechaNacimiento).format('YYYY-MM-DD')
     setRegistro({...data})
     setVisible(true)
   }
 
   const onInputChange = (e, name) => {
+    console.log(e,name);
     const val = (e.target && e.target.value) || '';
     let reg = { ...registro };
-    reg[`${name}`] = val;
-    setRegistro(reg);
-  };
-  const onInputNumberChange = (e, name) => {
-    const val = (e.target && e.target.value) || 0;
-    let reg = { ...registro };
-    reg[`${name}`] = val;
+    reg[`${name}`] = val.toUpperCase();
     setRegistro(reg);
   };
 
@@ -101,9 +97,10 @@ const AdmDoctor = () => {
       inputElements.forEach((element) => {
         formValues[element.name] = element.value;
       });
-      console.log('valores',formValues,registro);
-      formValues.opcion = Object.keys(registro).length > 0 ? 'U':'I';
+      // console.log('valores',formValues,registro,laEspec);
+      formValues.opcion = registro.IdDoctor > 0 ? 'U':'I';
       formValues.id = registro.IdDoctor || 0;
+      formValues.idEspecialidad = laEspec.IdEspecialidad
       if(row){
         formValues.opcion = 'D';
         formValues.id = row.IdDoctor
@@ -118,6 +115,7 @@ const AdmDoctor = () => {
       cargarDoctores();
       const tipo = r.status >= 400 ? 'error':'success'
       toast.current.show({severity:tipo, summary: 'Gestión Doctor', detail:r.data.message, life: 3000});
+      setLaEspec({})
     } catch (error) {
       console.log(error);
       toast.current.show({severity:'error', summary: 'Gestión Doctor', detail:error, life: 5000});
@@ -141,7 +139,7 @@ const AdmDoctor = () => {
         <Column header="Acciones" body={actionTemplate} style={{ width: 'clamp(100px, 110px, 120px)' }}></Column>
         <Column field="IdDoctor" header="ID"></Column>
         <Column field="Nombre" header="Nombre"></Column>
-        <Column field="IdEspecialidad" header="Especialidad"></Column>
+        <Column field="Especialidad" header="Especialidad"></Column>
         <Column field="Direccion" header="Dirección"></Column>
         <Column field="Telefonos" header="Telefonos"></Column>
         <Column field="FechaNacimiento" dataType="date" body={dateBodyTemplate} header="Fecha Nacimiento"></Column>
@@ -153,16 +151,17 @@ const AdmDoctor = () => {
             <InputText id="nombre" name="nombre" onChange={(e) => onInputChange(e, 'Nombre')} value={registro.Nombre} autoFocus/>
           </span>
           <span style={{display:'flex',flexDirection:'column',gap:'0.2rem'}}>
-            <label htmlFor="idEspecialidad">Especialidad</label>
-            <InputText id="idEspecialidad" name="idEspecialidad" onChange={(e) => onInputNumberChange(e, 'IdEspecialidad')} value={registro.IdEspecialidad}/>
+            <label htmlFor="especialidad">Especialidad</label>
+            <Dropdown value={laEspec} id="especialidad" name="especialidad" onChange={(e) => setLaEspec(e.value)}
+            options={especialidades} optionLabel="Descripcion" placeholder="Selecione Especialidad" className="w-full md:w-14rem" />
           </span>
           <span style={{display:'flex',flexDirection:'column',gap:'0.2rem'}}>
             <label htmlFor="direccion">Dirección</label>
             <InputText id="direccion" name="direccion" onChange={(e) => onInputChange(e, 'Direccion')}  value={registro.Direccion}/>
           </span>
           <span style={{display:'flex',flexDirection:'column',gap:'0.2rem'}}>
-            <label htmlFor="telefono">Telefonos</label>
-            <InputText id="telefono" name="telefono" onChange={(e) => onInputChange(e, 'Telefonos')} value={registro.Telefonos}/>
+            <label htmlFor="telefono">Teléfonos</label>
+            <InputText id="telefono" name="telefono" keyfilter="int" onChange={(e) => onInputChange(e, 'Telefonos')} value={registro.Telefonos}/>
           </span>
           <span style={{display:'flex',flexDirection:'column',gap:'0.2rem'}}>
             <label htmlFor="fechaNacimiento">Fecha Nacimiento</label>

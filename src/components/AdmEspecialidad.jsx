@@ -50,7 +50,7 @@ const AdmEspecialidad = () => {
   const onInputChange = (e, name) => {
     const val = (e.target && e.target.value) || '';
     let reg = { ...registro };
-    reg[`${name}`] = val;
+    reg[`${name}`] = val.toUpperCase();
     setRegistro(reg);
   };
 
@@ -84,7 +84,7 @@ const AdmEspecialidad = () => {
         formValues[element.name] = element.value;
       });
       console.log('valores',formValues,registro);
-      formValues.opcion = Object.keys(registro).length > 0 ? 'U':'I';
+      formValues.opcion = registro.IdEspecialidad > 0 ? 'U':'I';
       formValues.id = registro.IdEspecialidad || 0;
       if(row){
         formValues.opcion = 'D';

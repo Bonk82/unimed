@@ -54,7 +54,7 @@ const AdmPaciente = () => {
   const onInputChange = (e, name) => {
     const val = (e.target && e.target.value) || '';
     let reg = { ...registro };
-    reg[`${name}`] = val;
+    reg[`${name}`] = val.toUpperCase();
     setRegistro(reg);
   };
 
@@ -88,7 +88,7 @@ const AdmPaciente = () => {
         formValues[element.name] = element.value;
       });
       console.log('valores',formValues,registro);
-      formValues.opcion = Object.keys(registro).length > 0 ? 'U':'I';
+      formValues.opcion = registro.IdPaciente > 0 ? 'U':'I';
       formValues.id = registro.IdPaciente || 0;
       if(row){
         formValues.opcion = 'D';
@@ -150,7 +150,7 @@ const AdmPaciente = () => {
           </span>
           <span style={{display:'flex',flexDirection:'column',gap:'0.2rem'}}>
             <label htmlFor="cedula">C.I.</label>
-            <InputText id="cedula" name="cedula" onChange={(e) => onInputChange(e, 'Cedula')} value={registro.Cedula}/>
+            <InputText id="cedula" name="cedula" keyfilter="int" onChange={(e) => onInputChange(e, 'Cedula')} value={registro.Cedula}/>
           </span>
           <span style={{display:'flex',flexDirection:'column',gap:'0.2rem'}}>
             <label htmlFor="direccion">Dirección</label>
@@ -158,7 +158,7 @@ const AdmPaciente = () => {
           </span>
           <span style={{display:'flex',flexDirection:'column',gap:'0.2rem'}}>
             <label htmlFor="telefono">Telefono</label>
-            <InputText id="telefono" name="telefono" onChange={(e) => onInputChange(e, 'Telefono')} value={registro.Telefono}/>
+            <InputText id="telefono" name="telefono" keyfilter="int" onChange={(e) => onInputChange(e, 'Telefono')} value={registro.Telefono}/>
           </span>
           <span style={{display:'flex',flexDirection:'column',gap:'0.2rem'}}>
             <label htmlFor="numeroSeguro">Número Seguro</label>
