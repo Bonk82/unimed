@@ -16,7 +16,10 @@ const AdmDoctor = () => {
   const [visible, setVisible] = useState(false);
   const [registro, setRegistro] = useState({});
   const [laEspec, setLaEspec] = useState({})
+  const [globalFilterValue, setGlobalFilterValue] = useState('');
   const toast = useRef(null);
+  const [doctoresALL, setDoctoresALL] = useState([])
+
 
   useEffect(() => {
     cargarDoctores();
@@ -97,8 +100,8 @@ const AdmDoctor = () => {
       inputElements.forEach((element) => {
         formValues[element.name] = element.value;
       });
-      // console.log('valores',formValues,registro,laEspec);
-      formValues.opcion = registro.IdDoctor > 0 ? 'U':'I';
+      // console.log('valores',formValues,registro,laEspec,registro.IdDoctor);
+      formValues.opcion = registro.IdDoctor >= 0 ? 'U':'I';
       formValues.id = registro.IdDoctor || 0;
       formValues.idEspecialidad = laEspec.IdEspecialidad
       if(row){
@@ -129,22 +132,33 @@ const AdmDoctor = () => {
     setVisible(true)
   }
 
+  const onGlobalFilterChange = (e) => {
+    if(doctoresALL.length==0) setDoctoresALL(Object.assign(doctores))
+    const value = e.target.value;
+    setGlobalFilterValue(value)
+    const pivot = doctoresALL.filter(f=>f.Nombre.includes(value) || f.Especialidad.includes(value)
+    || f.Direccion.includes(value) || f.Telefonos.includes(value) || dayjs(f.FechaNacimiento).format('DD/MM/YYYY').includes(value));
+    setDoctores(pivot);
+  };
+
   return (
     <div style={{textAlign:'center'}}>
       <div className="flex justify-content-center align-items-center gap-5">
         <h3>Listado de Doctores</h3>
         <Button rounded outlined icon="pi pi-plus" size="small" onClick={nuevo} severity="success" tooltip="Agregar Doctor"/>
+        <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" />
       </div>
-      <DataTable value={doctores} stripedRows  size="small">
-        <Column header="Acciones" body={actionTemplate} style={{ width: 'clamp(100px, 110px, 120px)' }}></Column>
-        <Column field="IdDoctor" header="ID"></Column>
-        <Column field="Nombre" header="Nombre"></Column>
-        <Column field="Especialidad" header="Especialidad"></Column>
-        <Column field="Direccion" header="Dirección"></Column>
-        <Column field="Telefonos" header="Telefonos"></Column>
-        <Column field="FechaNacimiento" dataType="date" body={dateBodyTemplate} header="Fecha Nacimiento"></Column>
+      <DataTable value={doctores} stripedRows  size="small" paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} removableSort
+        globalFilterFields={['IdDoctor', 'Nombre', 'Especialidad.', 'Direccion','Telefonos','FechaNacimiento']}>
+        <Column header="Acciones" body={actionTemplate} style={{ width: 'clamp(100px, 110px, 120px)'}}></Column>
+        <Column field="IdDoctor" header="ID" sortable></Column>
+        <Column field="Nombre" header="Nombre" sortable filter></Column>
+        <Column field="Especialidad" header="Especialidad" sortable></Column>
+        <Column field="Direccion" header="Dirección" sortable></Column>
+        <Column field="Telefonos" header="Telefonos" sortable></Column>
+        <Column field="FechaNacimiento" dataType="date" body={dateBodyTemplate} header="Fecha Nacimiento" sortable></Column>
       </DataTable>
-      <Dialog header="Editar Doctor" modal visible={visible} style={{ width: '50vw' }} onHide={() => setVisible(false)} footer={footerContent}>
+      <Dialog header="Editar Doctor" modal visible={visible} style={{ width: '50vw' }} onHide={() => setVisible(false)}footer={footerContent}>
         <form action="" style={{display:'flex',flexDirection:'row',gap:'2rem',flexWrap:'wrap'}}>
           <span style={{display:'flex',flexDirection:'column',gap:'0.2rem'}}>
             <label htmlFor="nombre">Nombre Doctor</label>

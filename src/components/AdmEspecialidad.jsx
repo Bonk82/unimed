@@ -115,10 +115,10 @@ const AdmEspecialidad = () => {
         <h3>Listado de Especialidades</h3>
         <Button rounded outlined icon="pi pi-plus" size="small" onClick={nuevo} severity="success" tooltip="Agregar Especialidad"/>
       </div>
-      <DataTable value={especialidades} stripedRows  size="small">
+      <DataTable value={especialidades} stripedRows  size="small" paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} removableSort >
         <Column header="Acciones" body={actionTemplate} style={{ width: 'clamp(100px, 110px, 120px)' }}></Column>
-        <Column field="IdEspecialidad" header="ID"></Column>
-        <Column field="Descripcion" header="Descripción"></Column>
+        <Column field="IdEspecialidad" header="ID" sortable></Column>
+        <Column field="Descripcion" header="Descripción" sortable></Column>
       </DataTable>
       <Dialog header="Editar Espcialidad" modal visible={visible} style={{ width: '50vw' }} onHide={() => setVisible(false)} footer={footerContent}>
         <form action="" style={{display:'flex',flexDirection:'row',gap:'2rem',flexWrap:'wrap'}}>

@@ -126,17 +126,17 @@ const AdmPaciente = () => {
         <h3>Listado de Pacientes</h3>
         <Button rounded outlined icon="pi pi-plus" size="small" onClick={nuevo} severity="success" tooltip="Agregar Consulta"/>
       </div>
-      <DataTable value={pacientes} stripedRows  size="small">
-        <Column header="Acciones" body={actionTemplate} style={{ width:'clamp(100px, 110px, 120px)' }}></Column>
-        <Column field="IdPaciente" header="ID"></Column>
-        <Column field="Nombre" header="Nombre"></Column>
-        <Column field="Apellidos" header="Apellidos"></Column>
-        <Column field="Cedula" header="C.I."></Column>
-        <Column field="Direccion" header="Dirección"></Column>
-        <Column field="Telefono" header="Teléfonos"></Column>
-        <Column field="NumeroSeguro" header="Número Seguro"></Column>
-        <Column field="Mutualidad" header="Mutualidad"></Column>
-        <Column field="FechaNacimiento" body={dateBodyTemplate} header="Fecha Nacimiento"></Column>
+      <DataTable value={pacientes} stripedRows  size="small" paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} removableSort>
+        <Column header="Acciones" body={actionTemplate} style={{ minWidth:'7rem' }}></Column>
+        <Column field="IdPaciente" header="ID" sortable></Column>
+        <Column field="Nombre" header="Nombre" sortable></Column>
+        <Column field="Apellidos" header="Apellidos" sortable></Column>
+        <Column field="Cedula" header="C.I." sortable></Column>
+        <Column field="Direccion" header="Dirección" sortable></Column>
+        <Column field="Telefono" header="Teléfonos" sortable></Column>
+        <Column field="NumeroSeguro" header="Número Seguro" sortable></Column>
+        <Column field="Mutualidad" header="Mutualidad" sortable></Column>
+        <Column field="FechaNacimiento" body={dateBodyTemplate} header="Fecha Nacimiento" sortable></Column>
       </DataTable>
       <Dialog header="Editar Paciente" modal visible={visible} style={{ width: '50vw' }} onHide={() => setVisible(false)} footer={footerContent}>
         <form action="" style={{display:'flex',flexDirection:'row',gap:'2rem',flexWrap:'wrap'}}>

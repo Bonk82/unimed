@@ -150,14 +150,14 @@ const AdmConsulta = () => {
         <h3>Listado de Consultas</h3>
         <Button rounded outlined icon="pi pi-plus" size="small" onClick={nuevo} severity="success" tooltip="Agregar Consulta"/>
       </div>
-      <DataTable value={consultas} stripedRows  size="small">
-        <Column header="Acciones" body={actionTemplate} style={{ width: 'clamp(100px, 110px, 120px)' }}></Column>
-        <Column field="IdConsulta" header="ID"></Column>
-        <Column field="Fecha" dataType="date" body={(dateBodyTemplate)} header="Fecha"></Column>
-        <Column field="HoraInicio" dataType="time" body={timeBodyInicio}  header="Desde (Hrs.)"></Column>
-        <Column field="HoraFin" header="Hasta (Hrs.)" body={timeBodyFin}></Column>
-        <Column field="Cupo" header="Cupos"></Column>
-        <Column field="Doctor" header="Doctor"></Column>
+      <DataTable value={consultas} stripedRows  size="small" paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} removableSort >
+        <Column header="Acciones" body={actionTemplate} style={{ width: 'clamp(100px, 110px, 120px)' }} sortable></Column>
+        <Column field="IdConsulta" header="ID" sortable></Column>
+        <Column field="Fecha" dataType="date" body={(dateBodyTemplate)} header="Fecha" sortable></Column>
+        <Column field="HoraInicio" dataType="time" body={timeBodyInicio}  header="Desde (Hrs.)" sortable></Column>
+        <Column field="HoraFin" header="Hasta (Hrs.)" body={timeBodyFin} sortable></Column>
+        <Column field="Cupo" header="Cupos" sortable></Column>
+        <Column field="Doctor" header="Doctor" sortable></Column>
       </DataTable>
       <Dialog header="Editar Consulta" modal visible={visible} style={{ width: '50vw' }} onHide={() => setVisible(false)} footer={footerContent}>
         <form action="" style={{display:'flex',flexDirection:'row',gap:'2rem',flexWrap:'wrap'}}>
