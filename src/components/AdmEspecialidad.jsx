@@ -14,6 +14,8 @@ const AdmEspecialidad = () => {
   const [especialidades, setEspecialidades] = useState([])
   const [visible, setVisible] = useState(false);
   const [registro, setRegistro] = useState({});
+  const [globalFilterValue, setGlobalFilterValue] = useState('');
+  const [especialidadesALL, setEspecialidadesALL] = useState([]);
   const toast = useRef(null);
 
   useEffect(() => {
@@ -64,16 +66,11 @@ const AdmEspecialidad = () => {
       acceptLabel:'Eliminar',
       rejectLabel:'Cancelar',
       accept,
-      reject
     });
   }
 
   const accept = () => {
     guardarRegistro(registro);
-  }
-
-  const reject = () => {
-      // toast.current.show({ severity: 'warn', summary: 'Cancelado', detail: 'Tu cancelaste la eliminación', life: 3000 });
   }
 
   const guardarRegistro = async (row)=>{
@@ -109,16 +106,26 @@ const AdmEspecialidad = () => {
     setVisible(true)
   }
 
+  const onGlobalFilterChange = (e) => {
+    if(especialidadesALL.length==0) setEspecialidadesALL(Object.assign(especialidades))
+    const value = e.target.value;
+    setGlobalFilterValue(value)
+    const pivot = especialidadesALL.filter(f=>f.Descripcion.includes(value));
+    setEspecialidades(pivot);
+  };
+
   return (
     <div style={{textAlign:'center'}}>
       <div className="flex justify-content-center align-items-center gap-5">
         <h3>Listado de Especialidades</h3>
         <Button rounded outlined icon="pi pi-plus" size="small" onClick={nuevo} severity="success" tooltip="Agregar Especialidad"/>
+        <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Buscar..." />
       </div>
-      <DataTable value={especialidades} stripedRows  size="small" paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} removableSort >
-        <Column header="Acciones" body={actionTemplate} style={{ width: 'clamp(100px, 110px, 120px)' }}></Column>
-        <Column field="IdEspecialidad" header="ID" sortable></Column>
-        <Column field="Descripcion" header="Descripción" sortable></Column>
+      <DataTable value={especialidades} stripedRows  size="small" paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
+        removableSort currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros">
+        <Column header="Acciones" body={actionTemplate} headerClassName="row-actions"></Column>
+        <Column field="IdEspecialidad" header="ID" sortable headerClassName="table-header"></Column>
+        <Column field="Descripcion" header="Descripción" sortable headerClassName="table-header"></Column>
       </DataTable>
       <Dialog header="Editar Espcialidad" modal visible={visible} style={{ width: '50vw' }} onHide={() => setVisible(false)} footer={footerContent}>
         <form action="" style={{display:'flex',flexDirection:'row',gap:'2rem',flexWrap:'wrap'}}>

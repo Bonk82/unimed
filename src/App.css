@@ -66,3 +66,15 @@
   grid-template-columns: repeat(auto-fit,minmax(550px,1fr));
   gap: 2rem;
 }
+
+.table-header{
+  background-color:var(--primary-color);
+  color: var(--primary-color-text);
+}
+
+.row-actions{
+  background-color:var(--primary-color);
+  color: var(--primary-color-text);
+  width: clamp(120px, 140px, 160px);
+  min-width: 120px;
+}

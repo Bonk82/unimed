@@ -36,7 +36,7 @@ const Login = () => {
             <label htmlFor="username">Usuario</label>
           </span>
           <span className="p-float-label">  
-            <InputText id="password" name='password' />
+            <InputText id="password" name='password' type='password'/>
             <label htmlFor="password">Contraseña</label>
           </span>
 

@@ -15,7 +15,9 @@ const AdmConsulta = () => {
   const [doctores, setDoctores] = useState([])
   const [visible, setVisible] = useState(false);
   const [registro, setRegistro] = useState({});
-  const [elDoc, setElDoc] = useState({})
+  const [elDoc, setElDoc] = useState({});
+  const [globalFilterValue, setGlobalFilterValue] = useState('');
+  const [consultasALL, setConsultasALL] = useState([]);
   const toast = useRef(null);
 
   useEffect(() => {
@@ -144,20 +146,30 @@ const AdmConsulta = () => {
     setVisible(true)
   }
 
+  const onGlobalFilterChange = (e) => {
+    if(consultasALL.length==0) setConsultasALL(Object.assign(consultas))
+    const value = e.target.value;
+    setGlobalFilterValue(value)
+    const pivot = consultasALL.filter(f=>f.HoraInicio.toString().includes(value) || dayjs(f.Fecha).format('DD/MM/YYYY').includes(value)
+    || f.HoraFin.toString().includes(value) || f.Cupo.toString().includes(value) || f.Doctor.includes(value));
+    setConsultas(pivot);
+  };
+
   return (
     <div style={{textAlign:'center'}}>
       <div className="flex justify-content-center align-items-center gap-5">
         <h3>Listado de Consultas</h3>
         <Button rounded outlined icon="pi pi-plus" size="small" onClick={nuevo} severity="success" tooltip="Agregar Consulta"/>
+        <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Buscar..." />
       </div>
       <DataTable value={consultas} stripedRows  size="small" paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} removableSort >
-        <Column header="Acciones" body={actionTemplate} style={{ width: 'clamp(100px, 110px, 120px)' }} sortable></Column>
-        <Column field="IdConsulta" header="ID" sortable></Column>
-        <Column field="Fecha" dataType="date" body={(dateBodyTemplate)} header="Fecha" sortable></Column>
-        <Column field="HoraInicio" dataType="time" body={timeBodyInicio}  header="Desde (Hrs.)" sortable></Column>
-        <Column field="HoraFin" header="Hasta (Hrs.)" body={timeBodyFin} sortable></Column>
-        <Column field="Cupo" header="Cupos" sortable></Column>
-        <Column field="Doctor" header="Doctor" sortable></Column>
+        <Column header="Acciones" body={actionTemplate} sortable headerClassName="row-actions"></Column>
+        <Column field="IdConsulta" header="ID" sortable headerClassName="table-header"></Column>
+        <Column field="Fecha" dataType="date" body={(dateBodyTemplate)} header="Fecha" sortable headerClassName="table-header"></Column>
+        <Column field="HoraInicio" dataType="time" body={timeBodyInicio}  header="Desde (Hrs.)" sortable headerClassName="table-header"></Column>
+        <Column field="HoraFin" header="Hasta (Hrs.)" body={timeBodyFin} sortable headerClassName="table-header"></Column>
+        <Column field="Cupo" header="Cupos" sortable headerClassName="table-header"></Column>
+        <Column field="Doctor" header="Doctor" sortable headerClassName="table-header"></Column>
       </DataTable>
       <Dialog header="Editar Consulta" modal visible={visible} style={{ width: '50vw' }} onHide={() => setVisible(false)} footer={footerContent}>
         <form action="" style={{display:'flex',flexDirection:'row',gap:'2rem',flexWrap:'wrap'}}>

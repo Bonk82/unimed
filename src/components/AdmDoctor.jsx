@@ -18,7 +18,7 @@ const AdmDoctor = () => {
   const [laEspec, setLaEspec] = useState({})
   const [globalFilterValue, setGlobalFilterValue] = useState('');
   const toast = useRef(null);
-  const [doctoresALL, setDoctoresALL] = useState([])
+  const [doctoresALL, setDoctoresALL] = useState([]);
 
 
   useEffect(() => {
@@ -146,17 +146,17 @@ const AdmDoctor = () => {
       <div className="flex justify-content-center align-items-center gap-5">
         <h3>Listado de Doctores</h3>
         <Button rounded outlined icon="pi pi-plus" size="small" onClick={nuevo} severity="success" tooltip="Agregar Doctor"/>
-        <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" />
+        <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Buscar..." />
       </div>
       <DataTable value={doctores} stripedRows  size="small" paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} removableSort
         globalFilterFields={['IdDoctor', 'Nombre', 'Especialidad.', 'Direccion','Telefonos','FechaNacimiento']}>
-        <Column header="Acciones" body={actionTemplate} style={{ width: 'clamp(100px, 110px, 120px)'}}></Column>
-        <Column field="IdDoctor" header="ID" sortable></Column>
-        <Column field="Nombre" header="Nombre" sortable filter></Column>
-        <Column field="Especialidad" header="Especialidad" sortable></Column>
-        <Column field="Direccion" header="Dirección" sortable></Column>
-        <Column field="Telefonos" header="Telefonos" sortable></Column>
-        <Column field="FechaNacimiento" dataType="date" body={dateBodyTemplate} header="Fecha Nacimiento" sortable></Column>
+        <Column header="Acciones" body={actionTemplate} headerClassName="row-actions"></Column>
+        <Column field="IdDoctor" header="ID" sortable headerClassName="table-header"></Column>
+        <Column field="Nombre" header="Nombre" sortable headerClassName="table-header"></Column>
+        <Column field="Especialidad" header="Especialidad" sortable headerClassName="table-header"></Column>
+        <Column field="Direccion" header="Dirección" sortable headerClassName="table-header"></Column>
+        <Column field="Telefonos" header="Telefonos" sortable headerClassName="table-header"></Column>
+        <Column field="FechaNacimiento" dataType="date" body={dateBodyTemplate} header="Fecha Nacimiento" sortable headerClassName="table-header"></Column>
       </DataTable>
       <Dialog header="Editar Doctor" modal visible={visible} style={{ width: '50vw' }} onHide={() => setVisible(false)}footer={footerContent}>
         <form action="" style={{display:'flex',flexDirection:'row',gap:'2rem',flexWrap:'wrap'}}>

@@ -14,6 +14,8 @@ const AdmPaciente = () => {
   const [pacientes, setPacientes] = useState([])
   const [visible, setVisible] = useState(false);
   const [registro, setRegistro] = useState({});
+  const [globalFilterValue, setGlobalFilterValue] = useState(null);
+  const [pacientesALL, setPacientesALL] = useState([]);
   const toast = useRef(null);
 
   useEffect(() => {
@@ -120,23 +122,34 @@ const AdmPaciente = () => {
     setVisible(true)
   }
 
+  const onGlobalFilterChange = (e) => {
+    if(pacientesALL.length==0) setPacientesALL(Object.assign(pacientes))
+    const value = e.target.value;
+    setGlobalFilterValue(value)
+    const pivot = pacientesALL.filter(f=>f.Nombre.includes(value) || f.Apellidos.includes(value) || f.Cedula.includes(value)
+    || f.Direccion.includes(value) || f.Telefono.includes(value) || f.NumeroSeguro.includes(value)
+    || f.Mutualidad.includes(value) || dayjs(f.FechaNacimiento).format('DD/MM/YYYY').includes(value));
+    setPacientes(pivot);
+  };
+
   return (
     <div style={{textAlign:'center'}}>
       <div className="flex justify-content-center align-items-center gap-5">
         <h3>Listado de Pacientes</h3>
         <Button rounded outlined icon="pi pi-plus" size="small" onClick={nuevo} severity="success" tooltip="Agregar Consulta"/>
+        <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Buscar..." />
       </div>
-      <DataTable value={pacientes} stripedRows  size="small" paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} removableSort>
-        <Column header="Acciones" body={actionTemplate} style={{ minWidth:'7rem' }}></Column>
-        <Column field="IdPaciente" header="ID" sortable></Column>
-        <Column field="Nombre" header="Nombre" sortable></Column>
-        <Column field="Apellidos" header="Apellidos" sortable></Column>
-        <Column field="Cedula" header="C.I." sortable></Column>
-        <Column field="Direccion" header="Dirección" sortable></Column>
-        <Column field="Telefono" header="Teléfonos" sortable></Column>
-        <Column field="NumeroSeguro" header="Número Seguro" sortable></Column>
-        <Column field="Mutualidad" header="Mutualidad" sortable></Column>
-        <Column field="FechaNacimiento" body={dateBodyTemplate} header="Fecha Nacimiento" sortable></Column>
+      <DataTable value={pacientes} stripedRows  size="small" paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} removableSort globalFilter={globalFilterValue}>
+        <Column header="Acciones" body={actionTemplate} headerClassName="row-actions"></Column>
+        <Column field="IdPaciente" header="ID" sortable headerClassName="table-header"></Column>
+        <Column field="Nombre" header="Nombre" sortable headerClassName="table-header"></Column>
+        <Column field="Apellidos" header="Apellidos" sortable headerClassName="table-header"></Column>
+        <Column field="Cedula" header="C.I." sortable headerClassName="table-header"></Column>
+        <Column field="Direccion" header="Dirección" sortable headerClassName="table-header"></Column>
+        <Column field="Telefono" header="Teléfonos" sortable headerClassName="table-header"></Column>
+        <Column field="NumeroSeguro" header="Número Seguro" sortable headerClassName="table-header"></Column>
+        <Column field="Mutualidad" header="Mutualidad" sortable headerClassName="table-header"></Column>
+        <Column field="FechaNacimiento" body={dateBodyTemplate} header="Fecha Nacimiento" sortable headerClassName="table-header"></Column>
       </DataTable>
       <Dialog header="Editar Paciente" modal visible={visible} style={{ width: '50vw' }} onHide={() => setVisible(false)} footer={footerContent}>
         <form action="" style={{display:'flex',flexDirection:'row',gap:'2rem',flexWrap:'wrap'}}>
