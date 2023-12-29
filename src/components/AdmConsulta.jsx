@@ -9,6 +9,7 @@ import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Dropdown } from "primereact/dropdown";
+import { FilterMatchMode } from "primereact/api";
 
 const AdmConsulta = () => {
   const [consultas, setConsultas] = useState([])
@@ -16,8 +17,8 @@ const AdmConsulta = () => {
   const [visible, setVisible] = useState(false);
   const [registro, setRegistro] = useState({});
   const [elDoc, setElDoc] = useState({});
-  const [globalFilterValue, setGlobalFilterValue] = useState('');
-  const [consultasALL, setConsultasALL] = useState([]);
+  const [filtros, setFiltros] = useState({global: { value: null, matchMode: FilterMatchMode.CONTAINS }});
+  const [buscar, setBuscar] = useState('');
   const toast = useRef(null);
 
   useEffect(() => {
@@ -94,17 +95,12 @@ const AdmConsulta = () => {
       acceptClassName: 'p-button-danger',
       acceptLabel:'Eliminar',
       rejectLabel:'Cancelar',
-      accept,
-      reject
+      accept
     });
   }
 
   const accept = () => {
     guardarRegistro(registro);
-  }
-
-  const reject = () => {
-      // toast.current.show({ severity: 'warn', summary: 'Cancelado', detail: 'Tu cancelaste la eliminación', life: 3000 });
   }
 
   const guardarRegistro = async (row)=>{
@@ -146,13 +142,12 @@ const AdmConsulta = () => {
     setVisible(true)
   }
 
-  const onGlobalFilterChange = (e) => {
-    if(consultasALL.length==0) setConsultasALL(Object.assign(consultas))
+  const onBuscarChange = (e) => {
     const value = e.target.value;
-    setGlobalFilterValue(value)
-    const pivot = consultasALL.filter(f=>f.HoraInicio.toString().includes(value) || dayjs(f.Fecha).format('DD/MM/YYYY').includes(value)
-    || f.HoraFin.toString().includes(value) || f.Cupo.toString().includes(value) || f.Doctor.includes(value));
-    setConsultas(pivot);
+    let _filtros = { ...filtros };
+    _filtros["global"].value = value;
+    setFiltros(_filtros);
+    setBuscar(value);
   };
 
   return (
@@ -160,9 +155,13 @@ const AdmConsulta = () => {
       <div className="flex justify-content-center align-items-center gap-5">
         <h3>Listado de Consultas</h3>
         <Button rounded outlined icon="pi pi-plus" size="small" onClick={nuevo} severity="success" tooltip="Agregar Consulta"/>
-        <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Buscar..." />
+        <InputText value={buscar} onChange={onBuscarChange} placeholder="Buscar..." />
       </div>
-      <DataTable value={consultas} stripedRows  size="small" paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} removableSort >
+      <DataTable value={consultas} stripedRows  size="small" paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
+        removableSort currentPageReportTemplate="{first} a {last} de {totalRecords} consultas"
+        paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+        globalFilterFields={["IdConsulta","Fecha",'HoraInicio','HoraFin','Cupo','Doctor']} filters={filtros}
+        emptyMessage="Consulta no encontrada">
         <Column header="Acciones" body={actionTemplate} sortable headerClassName="row-actions"></Column>
         <Column field="IdConsulta" header="ID" sortable headerClassName="table-header"></Column>
         <Column field="Fecha" dataType="date" body={(dateBodyTemplate)} header="Fecha" sortable headerClassName="table-header"></Column>
@@ -192,7 +191,7 @@ const AdmConsulta = () => {
           <span style={{display:'flex',flexDirection:'column',gap:'0.2rem'}}>
             <label htmlFor="doctor">Doctor</label>
             <Dropdown value={elDoc} id="doctor" name="doctor" onChange={(e) => setElDoc(e.value)}
-            options={doctores} optionLabel="Nombre" placeholder="Selecione Doctor" className="w-full md:w-14rem" />
+            options={doctores} optionLabel="Nombre" placeholder="Seleccione Doctor" className="w-full md:w-14rem" />
           </span>
         </form>
       </Dialog>

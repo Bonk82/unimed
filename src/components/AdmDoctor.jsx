@@ -9,16 +9,17 @@ import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Dropdown } from "primereact/dropdown";
+import { FilterMatchMode } from "primereact/api";
 
 const AdmDoctor = () => {
-  const [doctores, setDoctores] = useState([])
-  const [especialidades, setEspecialidad] = useState([])
+  const [doctores, setDoctores] = useState([]);
+  const [especialidades, setEspecialidad] = useState([]);
   const [visible, setVisible] = useState(false);
   const [registro, setRegistro] = useState({});
   const [laEspec, setLaEspec] = useState({})
-  const [globalFilterValue, setGlobalFilterValue] = useState('');
+  const [filtros, setFiltros] = useState({global: { value: null, matchMode: FilterMatchMode.CONTAINS }});
+  const [buscar, setBuscar] = useState('');
   const toast = useRef(null);
-  const [doctoresALL, setDoctoresALL] = useState([]);
 
 
   useEffect(() => {
@@ -80,17 +81,12 @@ const AdmDoctor = () => {
       acceptClassName: 'p-button-danger',
       acceptLabel:'Eliminar',
       rejectLabel:'Cancelar',
-      accept,
-      reject
+      accept
     });
   }
 
   const accept = () => {
     guardarRegistro(registro);
-  }
-
-  const reject = () => {
-      // toast.current.show({ severity: 'warn', summary: 'Cancelado', detail: 'Tu cancelaste la eliminación', life: 3000 });
   }
 
   const guardarRegistro = async (row)=>{
@@ -100,7 +96,7 @@ const AdmDoctor = () => {
       inputElements.forEach((element) => {
         formValues[element.name] = element.value;
       });
-      // console.log('valores',formValues,registro,laEspec,registro.IdDoctor);
+      console.log('valores',formValues,registro);
       formValues.opcion = registro.IdDoctor >= 0 ? 'U':'I';
       formValues.id = registro.IdDoctor || 0;
       formValues.idEspecialidad = laEspec.IdEspecialidad
@@ -113,6 +109,7 @@ const AdmDoctor = () => {
         formValues.telefono = row.Telefonos
         formValues.fechaNacimiento = row.FechaNacimiento || null
       } 
+      console.log('antes de',formValues);
       const r = await fetching({opcion:'crudDoctor',params:formValues})
       console.log('guardado',r);
       cargarDoctores();
@@ -132,13 +129,12 @@ const AdmDoctor = () => {
     setVisible(true)
   }
 
-  const onGlobalFilterChange = (e) => {
-    if(doctoresALL.length==0) setDoctoresALL(Object.assign(doctores))
+  const onBuscarChange = (e) => {
     const value = e.target.value;
-    setGlobalFilterValue(value)
-    const pivot = doctoresALL.filter(f=>f.Nombre.includes(value) || f.Especialidad.includes(value)
-    || f.Direccion.includes(value) || f.Telefonos.includes(value) || dayjs(f.FechaNacimiento).format('DD/MM/YYYY').includes(value));
-    setDoctores(pivot);
+    let _filtros = { ...filtros };
+    _filtros["global"].value = value;
+    setFiltros(_filtros);
+    setBuscar(value);
   };
 
   return (
@@ -146,10 +142,13 @@ const AdmDoctor = () => {
       <div className="flex justify-content-center align-items-center gap-5">
         <h3>Listado de Doctores</h3>
         <Button rounded outlined icon="pi pi-plus" size="small" onClick={nuevo} severity="success" tooltip="Agregar Doctor"/>
-        <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Buscar..." />
+        <InputText value={buscar} onChange={onBuscarChange} placeholder="Buscar..." />
       </div>
-      <DataTable value={doctores} stripedRows  size="small" paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} removableSort
-        globalFilterFields={['IdDoctor', 'Nombre', 'Especialidad.', 'Direccion','Telefonos','FechaNacimiento']}>
+      <DataTable value={doctores} stripedRows  size="small" paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
+        removableSort currentPageReportTemplate="{first} a {last} de {totalRecords} doctores"
+        paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+        globalFilterFields={['IdDoctor', 'Nombre', 'Especialidad', 'Direccion','Telefonos','FechaNacimiento']}
+        filters={filtros} emptyMessage="Doctor no encontrado">
         <Column header="Acciones" body={actionTemplate} headerClassName="row-actions"></Column>
         <Column field="IdDoctor" header="ID" sortable headerClassName="table-header"></Column>
         <Column field="Nombre" header="Nombre" sortable headerClassName="table-header"></Column>
@@ -167,7 +166,7 @@ const AdmDoctor = () => {
           <span style={{display:'flex',flexDirection:'column',gap:'0.2rem'}}>
             <label htmlFor="especialidad">Especialidad</label>
             <Dropdown value={laEspec} id="especialidad" name="especialidad" onChange={(e) => setLaEspec(e.value)}
-            options={especialidades} optionLabel="Descripcion" placeholder="Selecione Especialidad" className="w-full md:w-14rem" />
+            options={especialidades} optionLabel="Descripcion" placeholder="Seleccione Especialidad" className="w-full md:w-14rem" />
           </span>
           <span style={{display:'flex',flexDirection:'column',gap:'0.2rem'}}>
             <label htmlFor="direccion">Dirección</label>

@@ -14,7 +14,7 @@ const NavBar = () => {
 
   return (
       (user || localStorage.getItem('conex')) && <div className="card">
-          <Menubar model={items} start={start} />
+          <Menubar model={items} start={start} style={{letterSpacing:'0.4rem',fontWeight:'bolder'}}/>
       </div>
   )
 }

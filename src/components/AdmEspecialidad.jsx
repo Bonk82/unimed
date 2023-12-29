@@ -8,14 +8,15 @@ import {fetching} from '../data/access'
 import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import { FilterMatchMode } from "primereact/api";
 
 const AdmEspecialidad = () => {
 
   const [especialidades, setEspecialidades] = useState([])
   const [visible, setVisible] = useState(false);
   const [registro, setRegistro] = useState({});
-  const [globalFilterValue, setGlobalFilterValue] = useState('');
-  const [especialidadesALL, setEspecialidadesALL] = useState([]);
+  const [filtros, setFiltros] = useState({global: { value: null, matchMode: FilterMatchMode.CONTAINS }});
+  const [buscar, setBuscar] = useState('');
   const toast = useRef(null);
 
   useEffect(() => {
@@ -106,12 +107,12 @@ const AdmEspecialidad = () => {
     setVisible(true)
   }
 
-  const onGlobalFilterChange = (e) => {
-    if(especialidadesALL.length==0) setEspecialidadesALL(Object.assign(especialidades))
+  const onBuscarChange = (e) => {
     const value = e.target.value;
-    setGlobalFilterValue(value)
-    const pivot = especialidadesALL.filter(f=>f.Descripcion.includes(value));
-    setEspecialidades(pivot);
+    let _filtros = { ...filtros };
+    _filtros["global"].value = value;
+    setFiltros(_filtros);
+    setBuscar(value);
   };
 
   return (
@@ -119,10 +120,13 @@ const AdmEspecialidad = () => {
       <div className="flex justify-content-center align-items-center gap-5">
         <h3>Listado de Especialidades</h3>
         <Button rounded outlined icon="pi pi-plus" size="small" onClick={nuevo} severity="success" tooltip="Agregar Especialidad"/>
-        <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Buscar..." />
+        <InputText value={buscar} onChange={onBuscarChange} placeholder="Buscar..." />
       </div>
       <DataTable value={especialidades} stripedRows  size="small" paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
-        removableSort currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros">
+        removableSort currentPageReportTemplate="{first} a {last} de {totalRecords} especialidades"
+        paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+        globalFilterFields={["Descripcion","IdEspecialidad"]} filters={filtros}
+        emptyMessage="Especialidad no encontrada">
         <Column header="Acciones" body={actionTemplate} headerClassName="row-actions"></Column>
         <Column field="IdEspecialidad" header="ID" sortable headerClassName="table-header"></Column>
         <Column field="Descripcion" header="Descripción" sortable headerClassName="table-header"></Column>

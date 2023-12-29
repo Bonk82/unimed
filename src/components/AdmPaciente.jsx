@@ -8,14 +8,15 @@ import {fetching} from '../data/access'
 import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import { FilterMatchMode } from "primereact/api";
 
 const AdmPaciente = () => {
 
   const [pacientes, setPacientes] = useState([])
   const [visible, setVisible] = useState(false);
   const [registro, setRegistro] = useState({});
-  const [globalFilterValue, setGlobalFilterValue] = useState(null);
-  const [pacientesALL, setPacientesALL] = useState([]);
+  const [filtros, setFiltros] = useState({global: { value: null, matchMode: FilterMatchMode.CONTAINS }});
+  const [buscar, setBuscar] = useState('');
   const toast = useRef(null);
 
   useEffect(() => {
@@ -70,16 +71,11 @@ const AdmPaciente = () => {
       acceptLabel:'Eliminar',
       rejectLabel:'Cancelar',
       accept,
-      reject
     });
   }
 
   const accept = () => {
     guardarRegistro(registro);
-  }
-
-  const reject = () => {
-      // toast.current.show({ severity: 'warn', summary: 'Cancelado', detail: 'Tu cancelaste la eliminación', life: 3000 });
   }
 
   const guardarRegistro = async (row)=>{
@@ -122,24 +118,26 @@ const AdmPaciente = () => {
     setVisible(true)
   }
 
-  const onGlobalFilterChange = (e) => {
-    if(pacientesALL.length==0) setPacientesALL(Object.assign(pacientes))
+  const onBuscarChange = (e) => {
     const value = e.target.value;
-    setGlobalFilterValue(value)
-    const pivot = pacientesALL.filter(f=>f.Nombre.includes(value) || f.Apellidos.includes(value) || f.Cedula.includes(value)
-    || f.Direccion.includes(value) || f.Telefono.includes(value) || f.NumeroSeguro.includes(value)
-    || f.Mutualidad.includes(value) || dayjs(f.FechaNacimiento).format('DD/MM/YYYY').includes(value));
-    setPacientes(pivot);
+    let _filtros = { ...filtros };
+    _filtros["global"].value = value;
+    setFiltros(_filtros);
+    setBuscar(value);
   };
 
   return (
     <div style={{textAlign:'center'}}>
       <div className="flex justify-content-center align-items-center gap-5">
         <h3>Listado de Pacientes</h3>
-        <Button rounded outlined icon="pi pi-plus" size="small" onClick={nuevo} severity="success" tooltip="Agregar Consulta"/>
-        <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Buscar..." />
+        <Button rounded outlined icon="pi pi-plus" size="small" onClick={nuevo} severity="success" tooltip="Agregar Paciente"/>
+        <InputText value={buscar} onChange={onBuscarChange} placeholder="Buscar..." />
       </div>
-      <DataTable value={pacientes} stripedRows  size="small" paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} removableSort globalFilter={globalFilterValue}>
+      <DataTable value={pacientes} stripedRows  size="small" paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
+        removableSort currentPageReportTemplate="{first} a {last} de {totalRecords} pacientes"
+        paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+        globalFilterFields={["IdPaciente","Nombre",'Apellidos','Cedula','Direccion','Telefono','NumeroSeguro','Mutualidad','FechaNacimiento']} filters={filtros}
+        emptyMessage="Paciente no encontrado">
         <Column header="Acciones" body={actionTemplate} headerClassName="row-actions"></Column>
         <Column field="IdPaciente" header="ID" sortable headerClassName="table-header"></Column>
         <Column field="Nombre" header="Nombre" sortable headerClassName="table-header"></Column>
