@@ -10,7 +10,7 @@ import Login from "./components/Login";
 import NotFound from "./components/NotFound";
 // import jwt from 'jsonwebtoken'
 import { PrimeReactProvider } from 'primereact/api';
-import "primereact/resources/themes/vela-green/theme.css";
+import "primereact/resources/themes/lara-dark-green/theme.css";
 import 'primeflex/primeflex.css';                                   // css utility
 import 'primeicons/primeicons.css';
 import 'primereact/resources/primereact.css';
