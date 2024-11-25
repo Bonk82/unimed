@@ -63,6 +63,8 @@ const AdmPaciente = () => {
 
   const confirmarEliminar = (data) => {
     setRegistro(data)
+    console.log('revi',data);
+    
     confirmDialog({
       message: 'Realmente desea eliminar este registro?',
       header: 'Confirmar Eliminación',
